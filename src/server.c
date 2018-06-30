@@ -178,7 +178,7 @@ void *connection_handler(void *socket_desc)
     while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 )
     {
         
-        printf("message: %s\n",client_message);
+        printf("command: %s\n",client_message);
         //Send the message back to client
         if( strcmp(client_message,"START_SEND_FILE")==0 )
         {
@@ -225,12 +225,34 @@ void *connection_handler(void *socket_desc)
 
             
 
-        } else if(strcmp(client_message,"SHUTDOWN_SERVER")==0){
+        }
+        else if(strcmp(client_message,"X_LIST_PROGRAMS")==0){
+            //char prog_list[*prog_num][200];
+            puts("Listing programs");
+            if(*prog_num<1)
+            {   
+               write(sock , "OK" , strlen("OK"));
+            }
+            else{
+                for(int i=0; i<*prog_num;i++){
+                    write(sock , prog_table[i].filename , strlen(prog_table[i].filename));
+                    strcpy(client_message,"");
+                    recv(sock , client_message , 2000 , 0);
+                }
+                write(sock , "OK" , strlen("OK"));
+                
+            }
+
+            
+
+        } 
+        else if(strcmp(client_message,"SHUTDOWN_SERVER")==0){
             puts("Killing server...");
             close(sock);
             exit(0);
 
         }
+        strcpy(client_message,"");
            
     }
      

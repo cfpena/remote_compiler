@@ -85,7 +85,7 @@ int main() {
 
         if(counter>=10){
             counter=0;
-            print_program_table(prog_table,prog_num);
+            //print_program_table(prog_table,prog_num);
         }
 
         counter++;

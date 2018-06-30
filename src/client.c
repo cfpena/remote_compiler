@@ -21,6 +21,7 @@ void main_menu();
 void send_sock_message(char *message);
 void receive_sock_message();
 const char* getFileNameFromPath(const char* path);
+void list_programs();
 
 int main(int argc , char *argv[])
 {
@@ -62,7 +63,7 @@ void main_menu(){
     while(1){
         printf("\nMENU:\n");
         printf("    1. SEND FILE\n");
-        printf("    2. COMPILE PROGRAM\n");
+        printf("    2. LIST PROGRAMS\n");
         printf("    3. RUN PROGRAM\n");
         printf("    4. KILL SERVER\n");
 
@@ -72,6 +73,7 @@ void main_menu(){
 
         switch(option){
             case 1:
+                
                 puts(CLEAR);
                 printf("Entre absolute path: ");
                 scanf("%s" , path);
@@ -80,17 +82,46 @@ void main_menu(){
                 
                 send_file(path);
                 break;
+            case 2:
+                puts(CLEAR);
+                list_programs();
+                
+
+                break;
 
             case 4:
                 puts(CLEAR);
                 printf("Killing server... ");
-                send_sock_message("SHUTDOWN_SERVER");           
+                send_sock_message("SHUTDOWN_SERVER");
                 break;
         }
     }
 
 }
 
+void list_programs(){
+    
+    char server_reply[2000];
+    int count=0;
+    send_sock_message("X_LIST_PROGRAMS");
+    
+    puts("List of programs:");
+    while(1){
+        server_reply[0]='\0';
+        receive_sock_message(&server_reply);
+        
+        if(strcmp(server_reply,"OK")==0){
+            printf("%d program(s) in memory",count);
+            break;
+        }else{
+            printf("%d. %s\n",count+1,server_reply);
+            send_sock_message("OK");
+            count++;
+        }
+    }
+
+    
+}
 
 void send_file(char *path){
 
@@ -135,6 +166,8 @@ void send_file(char *path){
     fread(fcontent, 1, size, fp);
     
     strcpy(message,fcontent);
+
+    fclose(fp);
     send_sock_message(message);
     receive_sock_message(&server_reply);
     
@@ -149,11 +182,13 @@ void send_sock_message(char message[]){
 }
 
 void receive_sock_message(char * server_reply){
+    int read_size;
     
-    if( recv(sock , server_reply , 2000 , 0) < 0)
+    if( (read_size = recv(sock , server_reply , 2000 , 0)) < 0)
     {
         puts("recv failed");
     }
+    server_reply[read_size]='\0'; //sure to clean buffer excess
     
 }
 
