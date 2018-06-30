@@ -1,9 +1,9 @@
 # Concurrent remote compiler with C programming language
 
-##Bulding
+Bulding
   - cd src
   - make
  
- ##Test
+ Test
   - ./run
   - ./compiler
