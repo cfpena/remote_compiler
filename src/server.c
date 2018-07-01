@@ -177,9 +177,10 @@ void *connection_handler(void *socket_desc)
 
     while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 )
     {
-        
+        client_message[read_size]='\0';   
         printf("command: %s\n",client_message);
-        //Send the message back to client
+        
+        
         if( strcmp(client_message,"START_SEND_FILE")==0 )
         {
             puts("Starting protocol to retrieve file");
@@ -188,18 +189,21 @@ void *connection_handler(void *socket_desc)
 
             write(sock , "OK" , strlen("OK"));
 
+            
             if ( (read_size = recv(sock , file_name , 2000 , 0)) < 0){ //waiting for filename
                puts("protocol wait filename fails");
             }
+            file_name[read_size]='\0';
             
             puts("Waiting for file content");            
             
             write(sock , "OK" , strlen("OK"));
 
-
+            
             if ( (read_size = recv(sock , file_content , 2000 , 0)) < 0){ //waiting for file content
                puts("protocol wait file content fails");
             }
+            file_content[read_size]='\0';
             
             fp = fopen(file_name,"w"); //write file content
             //add_request( req_table,req_num, 1,"","",file_name,1);
@@ -245,6 +249,82 @@ void *connection_handler(void *socket_desc)
 
             
 
+        }
+        else if(strcmp(client_message,"START_RUN_PROGR")==0){
+            client_message[read_size]='\0';
+
+            int index;
+            write(sock , "OK" , strlen("OK"));
+
+            
+            read_size = recv(sock , client_message , 2000 , 0);
+            client_message[read_size]='\0';
+
+            index = atoi(client_message);
+
+            int flag[3];
+            
+
+            while(1){
+                usleep(100);
+                switch(prog_table[index-1].status){
+                    case SOURCE:
+                        if(!flag[0]){
+                            write(sock , "Waiting for compilation..." , strlen("Waiting for compilation..."));
+                            read_size = recv(sock , client_message , 2000 , 0);
+                            flag[0]=1;
+                        }
+                        break;
+                    case COMPILED:
+                        if(!flag[1]){
+                            write(sock , "Already compiled" , strlen("Already compiled"));
+                            read_size = recv(sock , client_message , 2000 , 0);
+                            write(sock , "Waiting for execute..." , strlen("Waiting for execute..."));
+                            read_size = recv(sock , client_message , 2000 , 0);
+                            flag[1]=1;
+                        }
+                        break;
+                    case RUNNED:
+                        if(!flag[2]){
+
+                            
+                            
+                            write(sock , "Already executed" , strlen("Already executed"));
+                            read_size = recv(sock , client_message , 2000 , 0);
+
+                            
+                            
+                            write(sock , "RESULT: " , strlen("RESULT: "));
+                            read_size = recv(sock , client_message , 2000 , 0);
+
+                            
+
+                            write(sock , prog_table[index-1].response , strlen(prog_table[index-1].response));
+                            read_size = recv(sock , client_message , 2000 , 0);
+
+                            
+                            
+                            flag[2]=1;
+                            write(sock , "END" , strlen("END"));
+
+                            
+                            
+                        }
+                        break;
+
+                }
+                
+                if(prog_table[index-1].status==RUNNED) break;
+                
+                
+            }
+            client_message[read_size]='\0';
+            for (int i=0;i<sizeof(flag);i++) flag[i]=0;
+            
+
+            
+            
+
         } 
         else if(strcmp(client_message,"SHUTDOWN_SERVER")==0){
             puts("Killing server...");
@@ -252,7 +332,7 @@ void *connection_handler(void *socket_desc)
             exit(0);
 
         }
-        strcpy(client_message,"");
+        client_message[read_size]='\0';
            
     }
      
@@ -271,3 +351,5 @@ void *connection_handler(void *socket_desc)
      
     return 0;
 }
+
+

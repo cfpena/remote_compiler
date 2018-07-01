@@ -3,10 +3,12 @@
 
 #define SH_MEM_REQUEST_ID 1036
 #define SH_MEM_PROGRAM_ID 1037
-#define PORT 8080
+#define PORT 8090
 
 #define SEM_REQUEST_ID    250
 #define SEM_PROGRAM_ID    251
+
+#define SLEEP_P 5
 
 enum status_choice{ SOURCE , COMPILED , RUNNED };
 
@@ -14,7 +16,7 @@ enum status_choice{ SOURCE , COMPILED , RUNNED };
 struct request {
     int user_id;
     //time_t datetime;
-    char response[2000];
+    
     int order; 
 };
 
@@ -23,6 +25,7 @@ struct program {
     enum status_choice status;
     char prog_path[200];
     char source_path[200];
+    char response[2000];
 };
 
 union semun {              /* semaphore value, for semctl().     */

@@ -17,6 +17,7 @@ struct sockaddr_in server;
 
 
 void send_file(char *path);
+void run_program(char *path);
 void main_menu();
 void send_sock_message(char *message);
 void receive_sock_message();
@@ -75,7 +76,7 @@ void main_menu(){
             case 1:
                 
                 puts(CLEAR);
-                printf("Entre absolute path: ");
+                printf("Enter absolute path: ");
                 scanf("%s" , path);
                 fflush(stdin);
                 strcpy(path,path);
@@ -85,9 +86,16 @@ void main_menu(){
             case 2:
                 puts(CLEAR);
                 list_programs();
-                
-
                 break;
+            case 3:
+                puts(CLEAR);
+                printf("Enter program number: ");
+                scanf("%s" , path);
+                fflush(stdin);
+                strcpy(path,path);
+                run_program(path);
+                break;
+
 
             case 4:
                 puts(CLEAR);
@@ -121,6 +129,36 @@ void list_programs(){
     }
 
     
+}
+void run_program(char *path){
+    char message[1000] , server_reply[2000];
+    strcpy(message,"START_RUN_PROGR"); //start protocol
+    send_sock_message(message);
+    receive_sock_message(&server_reply);    
+
+    if(strcmp(server_reply,"OK")!=0){
+        puts("send file protocol fails");
+    }
+
+    strcpy(message,path); //send index of choice
+    send_sock_message(message);
+    
+
+    while(1){
+        receive_sock_message(&server_reply);
+
+        if(strcmp(server_reply,"END")==0){
+             break;
+        }else{
+            printf("%s\n",server_reply);
+            send_sock_message("OK");
+            }
+        
+    }
+
+    
+
+
 }
 
 void send_file(char *path){

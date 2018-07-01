@@ -41,7 +41,7 @@ void add_request(int sem_set_id, struct request* request_table,int *request_num,
     sem_lock(sem_set_id);
 
     request_table[*request_num].user_id = user_id;
-    strcpy(request_table[*request_num].response, response);
+   // strcpy(request_table[*request_num].response, response);
     request_table[*request_num].order = order;
 
     (*request_num)++;
@@ -51,9 +51,8 @@ void add_request(int sem_set_id, struct request* request_table,int *request_num,
 }
 
 void print_request(struct request req){
-    printf("id: %d  response: %s  order: %d\n",
+    printf("id: %d   order: %d\n",
         req.user_id,
-        req.response,
         req.order
     );
 }
@@ -89,11 +88,12 @@ void add_program(int sem_set_id, struct program* program_table,int *program_num,
 
 void print_program(struct program prog){
 
-    printf("filename: %s  path: %s  source: %s  status: %d\n",
+    printf("filename: %s  path: %s  source: %s  status: %d, response:  %s\n",
         prog.filename,
         prog.prog_path,
         prog.source_path,
-        prog.status
+        prog.status,
+        prog.response
     );
 }
 
