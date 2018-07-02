@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <header.h>
+#include <signal.h>
  
 #define CLEAR  "\x1B[2J"
 
@@ -24,10 +25,16 @@ void receive_sock_message();
 const char* getFileNameFromPath(const char* path);
 void list_programs();
 
+void signal_handler() 
+{
+    puts("ARLM");
+    send_file("../helloworld.c");
+}
+
 int main(int argc , char *argv[])
 {
     
-    
+    signal(SIGALRM,signal_handler);
      
     //Create socket
     sock = socket(AF_INET , SOCK_STREAM , 0);
@@ -66,7 +73,8 @@ void main_menu(){
         printf("    1. SEND FILE\n");
         printf("    2. LIST PROGRAMS\n");
         printf("    3. RUN PROGRAM\n");
-        printf("    4. KILL SERVER\n");
+        printf("    4. PRINT PROGRAMS TABLE\n");
+        printf("    5. PRINT REQUEST TABLE\n");
 
         printf("Enter option : ");
         scanf("%i" , &option);
@@ -99,8 +107,11 @@ void main_menu(){
 
             case 4:
                 puts(CLEAR);
-                printf("Killing server... ");
-                send_sock_message("SHUTDOWN_SERVER");
+                send_sock_message("PRINT_PROGTABLE");
+                break;
+            case 5:
+                puts(CLEAR);
+                send_sock_message("PRINT_REQ_TABLE");
                 break;
         }
     }

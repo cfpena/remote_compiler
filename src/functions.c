@@ -36,7 +36,7 @@ void sem_unlock(int sem_set_id)
 
 
 void add_request(int sem_set_id, struct request* request_table,int *request_num, 
-                  int user_id,char response[],char prog_path[],char source_path[],int order ){
+                  int user_id,int order ){
     
     sem_lock(sem_set_id);
 
@@ -58,11 +58,12 @@ void print_request(struct request req){
 }
 
 void print_request_table(struct request* request_table,int *request_num){
-    
+    printf("---------------------------------------------------------------------------\n");
     for(int i=0; i<*request_num;i++){
         struct request req = request_table[i];
         print_request(req);
     }
+    printf("---------------------------------------------------------------------------\n");
 
 }
 
@@ -88,6 +89,8 @@ void add_program(int sem_set_id, struct program* program_table,int *program_num,
 
 void print_program(struct program prog){
 
+    
+
     printf("filename: %s  path: %s  source: %s  status: %d, response:  %s\n",
         prog.filename,
         prog.prog_path,
@@ -95,14 +98,17 @@ void print_program(struct program prog){
         prog.status,
         prog.response
     );
+
+    
 }
 
 void print_program_table(struct program* program_table,int *program_num){
-    
+    printf("---------------------------------------------------------------------------\n");
     for(int i=0; i<*program_num;i++){
         struct program prog = program_table[i];
         print_program(prog);
     }
+    printf("---------------------------------------------------------------------------\n");
 
 }
 

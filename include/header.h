@@ -3,7 +3,7 @@
 
 #define SH_MEM_REQUEST_ID 1036
 #define SH_MEM_PROGRAM_ID 1037
-#define PORT 8090
+#define PORT 8080
 
 #define SEM_REQUEST_ID    250
 #define SEM_PROGRAM_ID    251
@@ -36,8 +36,11 @@ union semun {              /* semaphore value, for semctl().     */
 
 void compile(char prog_file[]);
 
+void sem_lock(int sem_set_id);
+void sem_unlock(int sem_set_id);
+
 void add_request(int sem_set_id, struct request* request_table,int *request_num, 
-                  int user_id,char response[],char prog_path[],char source_path[],int order );
+                  int user_id,int order );
 void print_request(struct request req);
 void print_request_table(struct request* request_table,int *request_num);
 

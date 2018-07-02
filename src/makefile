@@ -53,7 +53,7 @@ IDIR = ../include
 ODIR = obj
 LDIR = ../lib
 
-all: $(EXECUTABLE) $(SERVER_EXECUTABLE) $(COMPILER_EXECUTABLE) $(CLIENT_EXECUTABLE) 
+all: $(EXECUTABLE) $(SERVER_EXECUTABLE) $(COMPILER_EXECUTABLE) $(CLIENT_EXECUTABLE) test
 
 ################ MAIN ###############################
 
@@ -138,6 +138,8 @@ $(COMPILER_EXECUTABLE): $(OBJ_FILES)
 #####################################################
 
 
+test:
+	gcc test.c -o test
 
 
 # CLEAN RULE

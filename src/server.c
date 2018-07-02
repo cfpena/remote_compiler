@@ -13,12 +13,16 @@
 
 
 
+
 int shm_request_id, shm_program_id;
 char* shm_request_addr, * shm_program_addr;
 int *req_num, *prog_num;
 struct request* req_table;
 struct program * prog_table;
 int sem_prog_set_id, sem_req_set_id;
+int id=1;
+int order=1;
+int sem_th_set_id;
  
 void *connection_handler(void *);
  
@@ -89,7 +93,22 @@ int main(int argc , char *argv[])
 
     /*----------------------------------------------------------------------------*/
 
+    
+    union semun sem_th_val; 
+    int rc;
 
+    sem_th_set_id = semget(SEM_PROGRAM_ID, 1, IPC_CREAT | 0600);
+    if (sem_th_set_id == -1) {
+        perror("main: semget");
+    	exit(1);
+    }
+
+    sem_th_val.val = 1;
+    rc = semctl(sem_th_set_id, 0, SETVAL, sem_th_val);
+    if (rc == -1) {
+        perror("main: semctl");
+        exit(1);
+    }
 
     
     
@@ -175,8 +194,23 @@ void *connection_handler(void *socket_desc)
     char file_content[10000];
     FILE *fp;
 
+    int user_id = id;
+
+
+    add_request(sem_req_set_id,req_table,req_num,user_id,order);
+    order++;
+
+    sem_lock(sem_th_set_id);
+    id++;
+    sem_unlock(sem_th_set_id);
+
+    
+
     while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 )
     {
+        add_request(sem_req_set_id,req_table,req_num,user_id,order);
+        order++;
+
         client_message[read_size]='\0';   
         printf("command: %s\n",client_message);
         
@@ -326,11 +360,13 @@ void *connection_handler(void *socket_desc)
             
 
         } 
-        else if(strcmp(client_message,"SHUTDOWN_SERVER")==0){
-            puts("Killing server...");
-            close(sock);
-            exit(0);
-
+        else if(strcmp(client_message,"PRINT_PROGTABLE")==0){
+            print_program_table(prog_table,prog_num);
+            
+        }
+        else if(strcmp(client_message,"PRINT_REQ_TABLE")==0){
+            print_request_table(req_table,req_num);
+            
         }
         client_message[read_size]='\0';
            

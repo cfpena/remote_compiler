@@ -86,21 +86,21 @@ void * runner_handler(void * ptr){
         for(int i=0; i<*prog_num;i++){
             struct program *prog = &prog_table[i];
 
-            if((*prog).status==COMPILED){  
+            if((*prog).status==COMPILED){   //filter only compiled programs
                 
 
                 int link[2];
                 pid_t pid;
                 char response[4096];
 
-                pipe(link);
+                pipe(link); 
                     
 
                 pid = fork();
 
                 if(pid == 0) {
 
-                    dup2 (link[1], STDOUT_FILENO);
+                    dup2 (link[1], STDOUT_FILENO); 
                     close(link[0]);
                     close(link[1]);
                     char *const parmList[] = {NULL};
@@ -121,7 +121,7 @@ void * runner_handler(void * ptr){
                         printf("program executed sucessful!\n");
                     else 
                         printf("program execute fails!\n"); //when execv fails
-                    print_program_table(prog_table,prog_num);   
+                    //print_program_table(prog_table,prog_num);   
 
 
 
