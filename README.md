@@ -9,6 +9,11 @@ Features
         Path
         Response
         Status
+  
+  Structure called "requests" to save request information as:
+        User id
+        Request Order
+        
   The structure is shared by shared memory technique with the follow process:
        Main
        Server
@@ -42,7 +47,11 @@ Bulding
   - cd src
   - make
  
- Test
+ Running
   - cd src
   - ./run
   - ./client
+Testing
+  - cd src
+  - ./test <client numbers>
+  - killall -s SIGALRM client
